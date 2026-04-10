@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join me on Ping</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0b0d12;
+      color: #c8cdd8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .card {
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Logo */
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: #86f6ae;
+      box-shadow: 0 0 12px #86f6ae99;
+    }
+    .logo-text {
+      font-size: 26px; font-weight: 500; color: #f0f2f5;
+      letter-spacing: -0.3px;
+    }
+
+    /* Hero */
+    .headline {
+      font-size: 28px; font-weight: 600; color: #f0f2f5;
+      line-height: 1.25; margin-bottom: 14px;
+      letter-spacing: -0.4px;
+    }
+    .sub {
+      font-size: 16px; color: #8a9ab0;
+      line-height: 1.6; margin-bottom: 40px;
+    }
+
+    /* Opening indicator */
+    #opening {
+      display: none;
+      margin-bottom: 32px;
+    }
+    .opening-inner {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 20px; background: #161a22;
+      border: 1px solid #2a2f3a; border-radius: 12px;
+      color: #86f6ae; font-size: 14px; font-weight: 500;
+    }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #86f6ae44;
+      border-top-color: #86f6ae;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Store buttons */
+    #store-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .store-btn {
+      display: block;
+      transition: opacity 0.15s;
+    }
+    .store-btn:hover { opacity: 0.85; }
+    .store-btn img { display: block; height: 54px; width: auto; }
+
+    /* "Already have Ping?" link */
+    .open-link {
+      margin-top: 28px;
+      font-size: 13px; color: #4e5a6a;
+    }
+    .open-link a {
+      color: #86f6ae; text-decoration: none;
+    }
+    .open-link a:hover { text-decoration: underline; }
+
+    /* Footer */
+    .footer {
+      margin-top: 56px;
+      font-size: 12px; color: #3a424f;
+    }
+    .footer a { color: #3a424f; text-decoration: none; }
+    .footer a:hover { color: #8a9ab0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="dot"></div>
+      <span class="logo-text">Ping</span>
+    </div>
+
+    <h1 class="headline">You've been invited to Ping</h1>
+    <p class="sub">See when your friends are free —<br>before you reach out.</p>
+
+    <div id="opening">
+      <div class="opening-inner">
+        <div class="spinner"></div>
+        Opening Ping…
+      </div>
+    </div>
+
+    <div id="store-buttons">
+      <!-- Official Apple App Store badge -->
+      <a class="store-btn" id="ios-btn" href="#">
+        <img
+          src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us"
+          alt="Download on the App Store"
+        />
+      </a>
+
+      <!-- Official Google Play badge -->
+      <a class="store-btn" id="android-btn" href="#">
+        <img
+          src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+          alt="Get it on Google Play"
+          style="height: 64px; margin: -5px 0;"
+        />
+      </a>
+    </div>
+
+    <p class="open-link">
+      Already have Ping? <a id="open-app-link" href="#">Open the app</a>
+    </p>
+
+    <div class="footer">
+      <a href="https://yvanw.github.io/ping-legal/">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="https://yvanw.github.io/ping-legal/#terms">Terms of Service</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const ref = params.get('ref') || '';
+    const deepLink = ref ? `ping://invite?ref=${ref}` : 'ping://';
+
+    // Wire up "Open the app" link
+    document.getElementById('open-app-link').href = deepLink;
+
+    // If a ref is present, try to open the app immediately
+    if (ref) {
+      document.getElementById('opening').style.display = 'block';
+
+      // Attempt deep link
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = deepLink;
+      document.body.appendChild(iframe);
+
+      // After 1.6s, if page is still visible the app didn't open — show store buttons
+      const timer = setTimeout(() => {
+        document.getElementById('opening').style.display = 'none';
+      }, 1600);
+
+      // If the page goes hidden (app opened), cancel the timer
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) clearTimeout(timer);
+      });
+    }
+
+    // TODO: swap these hrefs when the app is published to the stores
+    // document.getElementById('ios-btn').href = 'https://apps.apple.com/app/ping/idXXXXXXXX';
+    // document.getElementById('android-btn').href = 'https://play.google.com/store/apps/details?id=com.ping.app';
+  </script>
+</body>
+</html>
