@@ -63,7 +63,7 @@
 
       <h2>Data we collect</h2>
       <ul>
-        <li><strong>Phone number</strong> — used for login via SMS OTP. Stored as a one-way SHA-256 hash for friend discovery. The raw number is never stored in our database after authentication.</li>
+        <li><strong>Phone number</strong> — used for login via SMS OTP. Supabase Auth retains it in its authentication infrastructure to validate your identity. In our own profile database, only a one-way SHA-256 hash of your number is stored, used solely for friend discovery. We never read or use the raw number ourselves beyond the sign-in flow.</li>
         <li><strong>Display name and handle</strong> — shown to people you connect with. You choose these.</li>
         <li><strong>Availability status</strong> — shared only with the circles you select. Auto-expires after the duration you set.</li>
         <li><strong>Device push token</strong> — used solely to deliver notifications to your device. Never shared.</li>
